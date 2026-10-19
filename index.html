@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<meta name="theme-color" content="#14263B">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<title>Console Contabilità · Effestudio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{--ink:#14263B;--paper:#F3F5F7;--card:#fff;--line:#D7DDE5;--mute:#5E6B7A;--blue:#2F5FD0;--red:#B83A2E;--red-soft:#FBE3E0}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.45 Barlow,Arial,sans-serif;-webkit-text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+.box{max-width:380px;margin:12vh auto 0;padding:0 16px}
+h1{font:700 26px/1.1 'Barlow Condensed';margin:0 0 4px}
+p{color:var(--mute);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+input{font:inherit;font-size:18px;padding:12px;border:1px solid var(--line);border-radius:6px;width:100%}
+button{font:inherit;font-weight:600;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:12px;cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.6}
+.err{background:var(--red-soft);color:var(--red);border-radius:6px;padding:10px;font-weight:600;font-size:14px}
+[hidden]{display:none!important}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="box" id="login" hidden>
+  <h1>Console Contabilità</h1>
+  <p>Solo amministrazione. Inserisci il PIN amministrazione (lo stesso di EffeOre).</p>
+  <div class="card">
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN amministrazione">
+    <button id="go">Entra</button>
+    <div class="err" id="err" hidden></div>
+  </div>
+</div>
+<div class="box" id="wait" hidden><p>Apertura console…</p></div>
+<script>
+// Pagina di ingresso: verifica il PIN sul server, poi carica la console originale (stessa grafica e logica del foglio).
+// I dati arrivano ogni volta dal server con il PIN: in memoria del telefono resta solo la grafica della pagina.
+(function(){
+  const $=id=>document.getElementById(id);
+  const ld=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  const st=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  async function call(body){
+    let r;try{r=await fetch(window.CONT_API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body),redirect:"follow",cache:"no-store"})}
+    catch(e){throw new Error("Connessione non riuscita. Controlla internet e riprova.")}
+    let j;try{j=await r.json()}catch(e){throw new Error("Risposta non valida dal server ("+r.status+"). Riprova tra poco.")}
+    if(!j.ok)throw new Error(j.error||"Errore sconosciuto.");return j.data;
+  }
+  // google.script.run compatibile: la console originale gira invariata
+  function shim(pin){
+    const mk=(ok,ko)=>new Proxy({},{get(_,k){
+      if(k==="withSuccessHandler")return h=>mk(h,ko);
+      if(k==="withFailureHandler")return h=>mk(ok,h);
+      if(k==="withUserObject")return()=>mk(ok,ko);
+      return(...args)=>{call({fn:k,pin,args}).then(d=>ok&&ok(d)).catch(e=>{
+        if(/PIN/.test(e.message)){st("cont-admin",null);location.reload();return}
+        ko?ko(e):console.error(e)})};
+    }});
+    return "<script>window.google={script:{run:("+mk.toString()+")(null,null),host:{close(){}}}};<\/script>";
+  }
+  function show(html,pin){
+    const runner=`<script>(function(){const API=${JSON.stringify(window.CONT_API)},PIN=${JSON.stringify(pin)};
+      async function call(b){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b),redirect:"follow",cache:"no-store"});const j=await r.json();if(!j.ok)throw new Error(j.error||"Errore");return j.data}
+      const mk=(ok,ko)=>new Proxy({},{get(_,k){if(k==="withSuccessHandler")return h=>mk(h,ko);if(k==="withFailureHandler")return h=>mk(ok,h);if(k==="withUserObject")return()=>mk(ok,ko);
+        return(...args)=>{call({fn:k,pin:PIN,args}).then(d=>ok&&ok(d)).catch(e=>{if(/PIN/.test(e.message)){try{localStorage.removeItem("cont-admin")}catch(_){}location.reload();return}ko?ko(e):console.error(e)})}}});
+      window.google={script:{run:mk(null,null),host:{close(){}}}};})();<\/script>`;
+    const extra=`<style>html{-webkit-text-size-adjust:100%}*{-webkit-tap-highlight-color:transparent}button,select,a{touch-action:manipulation}
+      @media (pointer:coarse){input,select{font-size:16px!important}}
+      header .bar{padding-top:calc(10px + env(safe-area-inset-top))}
+      table{font-variant-numeric:tabular-nums}
+      .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      @media (max-width:600px){.wrap{padding:0 12px 48px}.bar{padding:8px 12px}.figs{gap:10px 14px}.fig .n{font-size:24px}nav{padding:0 8px}nav button{padding:10px 10px 9px}.ctl #mese{min-width:110px}}
+      #hub-out{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9;background:#14263B;color:#fff;border:0;border-radius:99px;padding:8px 14px;font:600 13px Barlow,sans-serif;opacity:.85}</style>`;
+    let h=html.replace('<base target="_top">','');
+    h=h.replace(/<head>/i,'<head>'+runner);
+    h=h.replace(/<\/head>/i,extra+'<link rel="icon" type="image/png" href="icons/favicon-32.png"><title>Console Contabilità · Effestudio</title></head>');
+    h=h.replace(/<\/body>/i,'<button id="hub-out" onclick="try{localStorage.removeItem(\'cont-admin\')}catch(e){};location.reload()">Esci</button></body>');
+    document.open();document.write(h);document.close();
+  }
+  async function enter(pin,silent){
+    $("login").hidden=true;$("wait").hidden=false;
+    try{
+      const cached=ld("cont-page");
+      if(cached){
+        // la grafica è già sul telefono: apertura immediata, aggiornamento in background per la prossima volta
+        call({fn:"pagina",pin}).then(p=>st("cont-page",p)).catch(()=>{});
+        st("cont-admin",pin);show(cached,pin);return;
+      }
+      const p=await call({fn:"pagina",pin});st("cont-page",p);st("cont-admin",pin);show(p,pin);
+    }catch(e){
+      $("wait").hidden=true;$("login").hidden=false;
+      if(/PIN/.test(e.message))st("cont-admin",null);
+      if(!silent||!/PIN/.test(e.message)){$("err").textContent=e.message;$("err").hidden=false}
+    }
+  }
+  $("go").onclick=()=>{const b=$("go");b.disabled=true;b.textContent="Verifico…";$("err").hidden=true;enter($("pin").value.trim()).finally(()=>{b.disabled=false;b.textContent="Entra"})};
+  $("pin").onkeydown=e=>{if(e.key==="Enter")$("go").click()};
+  const saved=ld("cont-admin");
+  if(saved)enter(saved,true);else{$("login").hidden=false;setTimeout(()=>$("pin").focus(),50)}
+})();
+</script>
+</body>
+</html>
