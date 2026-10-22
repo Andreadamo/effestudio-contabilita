@@ -226,7 +226,9 @@ async function caricaInfo(cid){
     if(!sel||sel.cid!==cid)return;
     if(!r){$('info').innerHTML='CID '+esc(cid)+' · nessun abbonamento precedente';return}
     const parts=[];
-    Object.keys(r).forEach(k=>{const v=r[k];if(v!==''&&v!=null&&typeof v!=='object')parts.push(esc(k)+': <b>'+esc(v)+'</b>')});
+    if(r.n)parts.push('<b>'+esc(r.n)+'</b> abb.');
+    if(r.tipo)parts.push('ultimo <b>'+esc(r.tipo)+'</b>'+(r.data?' del '+esc(r.data):''));
+    if(r.scad)parts.push('scade <b>'+esc(r.scad)+'</b>');
     $('info').innerHTML='CID '+esc(cid)+(parts.length?'<br>'+parts.join(' · '):'');
     if(r.sede&&(D.sedi||[]).includes(r.sede))setChip($('sede'),r.sede);
     if(r.pagamento&&(D.pagamenti||[]).includes(r.pagamento))setChip($('pagamento'),r.pagamento);
