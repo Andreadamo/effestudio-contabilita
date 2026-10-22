@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<meta name="theme-color" content="#14263B">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<title>Nuovo incasso · Effestudio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{--ink:#14263B;--paper:#F3F5F7;--card:#fff;--line:#D7DDE5;--mute:#5E6B7A;--blue:#2F5FD0;--blue-soft:#E6EDFB;--red:#B83A2E;--red-soft:#FBE3E0;--ok:#1E7A4F;--ok-soft:#DFF3E8;--amber:#9A6200;--amber-soft:#FFF1D6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.4 Barlow,Arial,sans-serif;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+header h1{font:700 22px/1.1 'Barlow Condensed';margin:0;letter-spacing:.3px}
+header button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:99px;padding:6px 12px;font:600 13px Barlow}
+main{max-width:520px;margin:0 auto;padding:12px 16px calc(110px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.card h2{font:600 13px Barlow;text-transform:uppercase;letter-spacing:.6px;color:var(--mute);margin:0 0 10px}
+label{display:block;font-weight:600;font-size:14px;margin:0 0 4px}
+.f{margin-bottom:12px}.f:last-child{margin-bottom:0}
+input,select,textarea{font:inherit;font-size:16px;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--mute) 50%),linear-gradient(135deg,var(--mute) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:9px 14px;font:600 15px Barlow;color:var(--ink);touch-action:manipulation}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.sug{border:1px solid var(--line);border-radius:8px;margin-top:6px;overflow:hidden}
+.sug button{display:flex;justify-content:space-between;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--line);padding:11px 12px;font:500 16px Barlow;color:var(--ink)}
+.sug button:last-child{border-bottom:0}
+.sug small{color:var(--mute)}
+.info{margin-top:8px;border-radius:8px;padding:9px 11px;font-size:14px}
+.info.old{background:var(--blue-soft)}.info.new{background:var(--amber-soft);color:var(--amber);font-weight:600}
+.money{position:relative}.money input{padding-left:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.money:before{content:"€";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mute);font-weight:600}
+.resto{margin-top:6px;font-weight:600;color:var(--red);font-size:14px}
+.ck{display:flex;flex-direction:column;gap:2px}
+.ck label{display:flex;align-items:center;gap:10px;font-weight:500;font-size:16px;padding:8px 0;margin:0}
+.ck input{width:22px;height:22px;padding:0;appearance:auto;-webkit-appearance:checkbox;flex:none}
+.q li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.q ul{list-style:none;margin:0;padding:0}.q li:last-child{border-bottom:0}
+.q b{font-weight:600}.q small{color:var(--mute);display:block}
+.q .x{background:none;border:0;color:var(--red);font-size:22px;padding:0 6px;line-height:1}
+.tot{display:flex;justify-content:space-between;font-weight:600;margin-top:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(243,245,247,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.bar div{max-width:520px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;font:600 17px Barlow;border-radius:10px;padding:14px;border:0;touch-action:manipulation}
+.btn.pri{background:var(--blue);color:#fff}.btn.sec{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+.btn:disabled{opacity:.55}
+.msg{border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:15px}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}.msg.err{background:var(--red-soft);color:var(--red);font-weight:600}
+.msg.ok b{display:block;font-size:17px;margin-bottom:2px}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.login h1{font:700 26px/1.1 'Barlow Condensed';margin:0 0 4px}.login p{color:var(--mute);margin:0 0 16px}
+.wait{text-align:center;color:var(--mute);padding:40px 16px}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;margin:0 auto 10px;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<div class="login" id="login" hidden>
+  <h1>Nuovo incasso</h1>
+  <p>Inserisci il PIN amministrazione (lo stesso di EffeOre).</p>
+  <div class="card">
+    <div class="f"><input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN"></div>
+    <button class="btn pri" id="go" style="width:100%">Entra</button>
+    <div class="msg err" id="lerr" hidden style="margin:10px 0 0"></div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header><h1>Nuovo incasso</h1><button id="esci">Esci</button></header>
+  <main>
+    <div class="wait" id="wait"><div class="spin"></div>Carico clienti e listino…</div>
+    <div id="form" hidden>
+      <div id="esito"></div>
+
+      <div class="card">
+        <h2>Cliente</h2>
+        <div class="f">
+          <input id="nome" autocomplete="off" autocapitalize="words" placeholder="Nome e cognome" aria-label="Cliente">
+          <div class="sug" id="sug" hidden></div>
+          <div class="info" id="info" hidden></div>
+        </div>
+        <div id="contatti" hidden>
+          <div class="row">
+            <div class="f"><label for="telefono">Telefono</label><input id="telefono" type="tel" autocomplete="off"></div>
+            <div class="f"><label for="email">Email</label><input id="email" type="email" autocomplete="off" autocapitalize="off"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Vendita</h2>
+        <div class="f"><label>Sede</label><div class="chips" id="sede"></div></div>
+        <div class="f"><label for="servizio">Servizio</label><select id="servizio"></select></div>
+        <div class="f"><label for="tipo">Tipo abbonamento</label><select id="tipo"></select></div>
+        <div class="row" id="ptBox" hidden>
+          <div class="f"><label for="trainer">Trainer</label><select id="trainer"></select></div>
+          <div class="f"><label for="qtaPT">N° lezioni</label><input id="qtaPT" type="number" inputmode="numeric" min="1"></div>
+        </div>
+        <div class="f"><label>Pagamento</label><div class="chips" id="pagamento"></div></div>
+        <div class="row">
+          <div class="f"><label for="totale">Totale</label><div class="money"><input id="totale" type="text" inputmode="decimal" autocomplete="off"></div></div>
+          <div class="f"><label for="pagato">Pagato</label><div class="money"><input id="pagato" type="text" inputmode="decimal" autocomplete="off"></div></div>
+        </div>
+        <div class="resto" id="resto" hidden></div>
+        <div class="ck" style="margin-top:6px">
+          <label><input type="checkbox" id="iscrizione"> <span id="lblIscr">Quota iscrizione</span></label>
+          <label><input type="checkbox" id="tessera"> Tessera</label>
+          <label><input type="checkbox" id="certificato"> Certificato</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Altro</h2>
+        <div class="f"><label for="data">Data</label><input id="data" type="date"></div>
+        <div class="f"><label for="note">Note</label><textarea id="note" rows="2"></textarea></div>
+      </div>
+
+      <div class="card q" id="coda" hidden>
+        <h2>Da salvare</h2>
+        <ul id="lista"></ul>
+        <div class="tot"><span id="totN"></span><span id="totE"></span></div>
+      </div>
+    </div>
+  </main>
+  <div class="bar" id="bar" hidden><div>
+    <button class="btn sec" id="aggiungi">+ Lista</button>
+    <button class="btn pri" id="salva">Salva</button>
+  </div></div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const ld=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const st=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(/\s|€/g,'').replace(',','.'));return isNaN(n)?0:n};
+const eur=n=>'€ '+n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();
+
+let PIN='',D=null,CL=[],sel=null,coda=[],pagatoTouched=false,busy=false;
+
+async function call(fn,args){
+  let r;
+  try{r=await fetch(window.CONT_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,pin:PIN,args:args||[]}),redirect:'follow',cache:'no-store'})}
+  catch(e){throw new Error('Connessione non riuscita. Controlla internet e riprova.')}
+  let j;try{j=await r.json()}catch(e){throw new Error('Risposta non valida dal server ('+r.status+'). Riprova tra poco.')}
+  if(!j.ok){if(/PIN/.test(j.error||'')){st('cont-admin',null)}throw new Error(j.error||'Errore sconosciuto.')}
+  return j.data;
+}
+
+/* ---------- accesso ---------- */
+async function entra(pin,silent){
+  PIN=pin;$('login').hidden=true;$('app').hidden=false;$('wait').hidden=false;$('form').hidden=true;$('bar').hidden=true;
+  try{
+    D=await call('getInitData');
+    st('cont-admin',pin);avvia();
+  }catch(e){
+    $('app').hidden=true;$('login').hidden=false;
+    if(!silent||!/PIN/.test(e.message)){$('lerr').textContent=e.message;$('lerr').hidden=false}
+  }
+}
+$('go').onclick=()=>{const b=$('go');b.disabled=true;b.textContent='Verifico…';$('lerr').hidden=true;entra($('pin').value.trim()).finally(()=>{b.disabled=false;b.textContent='Entra'})};
+$('pin').onkeydown=e=>{if(e.key==='Enter')$('go').click()};
+$('esci').onclick=()=>{st('cont-admin',null);location.reload()};
+
+/* ---------- form ---------- */
+function opts(el,list,vuota){el.innerHTML=(vuota?'<option value="">—</option>':'')+list.map(x=>`<option>${esc(x)}</option>`).join('')}
+function chips(el,list,key){
+  el.innerHTML=list.map(x=>`<button type="button" class="chip" data-v="${esc(x)}">${esc(x)}</button>`).join('');
+  el.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;setChip(el,b.dataset.v);if(key)st(key,b.dataset.v)};
+}
+function setChip(el,v){[...el.children].forEach(c=>c.classList.toggle('on',c.dataset.v===v))}
+function getChip(el){const c=el.querySelector('.chip.on');return c?c.dataset.v:''}
+
+function avvia(){
+  CL=(D.clienti||[]).map(c=>({cid:c.cid,nome:c.nome,k:norm(c.nome),k2:norm(String(c.nome).split(' ').reverse().join(' '))}));
+  chips($('sede'),D.sedi||[],'inc-sede');chips($('pagamento'),D.pagamenti||[],'inc-pag');
+  opts($('servizio'),D.servizi||[],true);opts($('tipo'),D.tipi||[],true);opts($('trainer'),D.trainer||[],true);
+  setChip($('sede'),ld('inc-sede')||(D.sedi||[])[0]||'');setChip($('pagamento'),ld('inc-pag')||(D.pagamenti||[])[0]||'');
+  $('lblIscr').textContent='Quota iscrizione '+eur(num(D.iscr));
+  $('data').value=D.oggi;
+  $('wait').hidden=true;$('form').hidden=false;$('bar').hidden=false;
+}
+
+/* cliente: suggerimenti */
+$('nome').addEventListener('input',()=>{
+  sel=null;mostraInfo();
+  const q=norm($('nome').value);
+  if(q.length<2){$('sug').hidden=true;return}
+  const hit=CL.filter(c=>c.k.includes(q)||c.k2.includes(q)).sort((a,b)=>(b.k.startsWith(q)||b.k2.startsWith(q))-(a.k.startsWith(q)||a.k2.startsWith(q))).slice(0,6);
+  $('sug').innerHTML=hit.map(c=>`<button type="button" data-cid="${esc(c.cid)}"><span>${esc(c.nome)}</span><small>${esc(c.cid)}</small></button>`).join('')
+    +`<button type="button" data-new="1"><span>➕ Nuovo cliente: <b>${esc($('nome').value.trim())}</b></span></button>`;
+  $('sug').hidden=false;
+});
+$('sug').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;$('sug').hidden=true;
+  if(b.dataset.new){sel={nuovo:true};mostraInfo();$('nome').blur();return}
+  const c=CL.find(x=>String(x.cid)===b.dataset.cid);if(!c)return;
+  $('nome').value=c.nome;sel={cid:c.cid,nome:c.nome};mostraInfo();$('nome').blur();caricaInfo(c.cid);
+};
+function mostraInfo(){
+  const i=$('info');
+  if(!sel){i.hidden=true;$('contatti').hidden=true;return}
+  if(sel.nuovo){
+    i.className='info new';i.textContent='Cliente nuovo: il CID si crea al salvataggio.';i.hidden=false;$('contatti').hidden=false;
+    $('iscrizione').checked=!coda.some(f=>norm(f.nome)===norm($('nome').value));prezzo();return;
+  }
+  $('contatti').hidden=true;$('iscrizione').checked=false;prezzo();
+  i.className='info old';i.innerHTML='CID '+esc(sel.cid)+' · carico storico…';i.hidden=false;
+}
+async function caricaInfo(cid){
+  try{
+    const r=await call('infoCliente',[cid]);
+    if(!sel||sel.cid!==cid)return;
+    if(!r){$('info').innerHTML='CID '+esc(cid)+' · nessun abbonamento precedente';return}
+    const parts=[];
+    Object.keys(r).forEach(k=>{const v=r[k];if(v!==''&&v!=null&&typeof v!=='object')parts.push(esc(k)+': <b>'+esc(v)+'</b>')});
+    $('info').innerHTML='CID '+esc(cid)+(parts.length?'<br>'+parts.join(' · '):'');
+    if(r.sede&&(D.sedi||[]).includes(r.sede))setChip($('sede'),r.sede);
+    if(r.pagamento&&(D.pagamenti||[]).includes(r.pagamento))setChip($('pagamento'),r.pagamento);
+    if(r.servizio&&(D.servizi||[]).includes(r.servizio))$('servizio').value=r.servizio;
+    if(r.tipo&&(D.tipi||[]).includes(r.tipo)){$('tipo').value=r.tipo;tipoCambiato()}
+  }catch(e){if(sel&&sel.cid===cid)$('info').innerHTML='CID '+esc(cid)}
+}
+
+/* prezzi */
+function prezzo(){
+  const base=D&&D.listino?D.listino[$('tipo').value]:undefined;
+  if(base===undefined||base===''){resto();return}
+  const p=(num(base)+($('iscrizione').checked?num(D.iscr):0)).toFixed(2);
+  $('totale').value=p;if(!pagatoTouched)$('pagato').value=p;resto();
+}
+function tipoCambiato(){$('ptBox').hidden=$('tipo').value!=='PT';prezzo()}
+$('tipo').addEventListener('change',tipoCambiato);
+$('iscrizione').addEventListener('change',()=>{
+  const base=D.listino?D.listino[$('tipo').value]:undefined;
+  if(base===undefined||base===''){
+    const t=Math.max(0,num($('totale').value)+($('iscrizione').checked?1:-1)*num(D.iscr));
+    $('totale').value=t.toFixed(2);if(!pagatoTouched)$('pagato').value=$('totale').value;resto();
+  }else prezzo();
+});
+$('totale').addEventListener('input',()=>{if(!pagatoTouched)$('pagato').value=$('totale').value;resto()});
+$('pagato').addEventListener('input',()=>{pagatoTouched=true;resto()});
+function resto(){const d=num($('totale').value)-num($('pagato').value);$('resto').hidden=!(d>0.004);$('resto').textContent='Resta da incassare '+eur(d)}
+
+/* lista e salvataggio */
+function leggi(){
+  return{nome:$('nome').value.trim(),data:$('data').value,sede:getChip($('sede')),servizio:$('servizio').value,tipo:$('tipo').value,
+    pagamento:getChip($('pagamento')),qtaPT:$('tipo').value==='PT'?$('qtaPT').value:'',trainer:$('tipo').value==='PT'?$('trainer').value:'',
+    totale:num($('totale').value).toFixed(2),pagato:($('pagato').value.trim()===''?num($('totale').value):num($('pagato').value)).toFixed(2),
+    telefono:$('telefono').value.trim(),email:$('email').value.trim(),note:$('note').value.trim(),
+    tessera:$('tessera').checked,certificato:$('certificato').checked,iscrizione:$('iscrizione').checked,quotaIscr:num(D.iscr)};
+}
+function valida(f){
+  if(!f.nome)return'Inserisci il cliente.';
+  if(!sel)return'Scegli il cliente dall\'elenco o tocca "Nuovo cliente".';
+  if(!f.sede)return'Scegli la sede.';
+  if(!f.tipo)return'Scegli il tipo di abbonamento.';
+  if(!f.pagamento)return'Scegli il metodo di pagamento.';
+  if(!(num(f.totale)>0))return'Inserisci il totale.';
+  if(num(f.pagato)>num(f.totale)+0.004)return'Il pagato supera il totale.';
+  if(f.tipo==='PT'&&!f.trainer)return'Scegli il trainer del PT.';
+  if(!f.data)return'Inserisci la data.';
+  return'';
+}
+function pulisci(){
+  ['nome','qtaPT','totale','pagato','telefono','email','note'].forEach(k=>$(k).value='');
+  $('tessera').checked=$('certificato').checked=$('iscrizione').checked=false;
+  sel=null;pagatoTouched=false;mostraInfo();resto();$('sug').hidden=true;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function compilato(){return $('nome').value.trim()!==''||num($('totale').value)>0}
+function disegnaCoda(){
+  $('coda').hidden=!coda.length;
+  $('lista').innerHTML=coda.map((f,i)=>`<li><div><b>${esc(f.nome)}</b><small>${esc(f.tipo)} · ${esc(f.sede)} · ${esc(f.pagamento)}${num(f.pagato)<num(f.totale)?' · pagato '+eur(num(f.pagato)):''}</small></div><div style="display:flex;align-items:center;gap:6px"><b>${eur(num(f.totale))}</b><button class="x" data-i="${i}" aria-label="Rimuovi">×</button></div></li>`).join('');
+  $('totN').textContent=coda.length+(coda.length===1?' voce':' voci');
+  $('totE').textContent='Incassato '+eur(coda.reduce((s,f)=>s+num(f.pagato),0));
+  $('salva').textContent=coda.length?'Salva tutto ('+(coda.length+(compilato()?1:0))+')':'Salva';
+}
+$('lista').onclick=e=>{const b=e.target.closest('.x');if(b){coda.splice(+b.dataset.i,1);disegnaCoda()}};
+function errore(t){$('esito').innerHTML=`<div class="msg err">${esc(t)}</div>`;window.scrollTo({top:0,behavior:'smooth'})}
+$('aggiungi').onclick=()=>{
+  const f=leggi(),e=valida(f);if(e)return errore(e);
+  coda.push(f);$('esito').innerHTML='';pulisci();disegnaCoda();
+};
+document.addEventListener('input',()=>{if(coda.length)disegnaCoda()});
+$('salva').onclick=async()=>{
+  if(busy)return;
+  const lista=coda.slice();
+  if(compilato()||!lista.length){const f=leggi(),e=valida(f);if(e)return errore(e);lista.push(f)}
+  busy=true;$('salva').disabled=$('aggiungi').disabled=true;$('salva').textContent='Salvataggio…';
+  try{
+    const res=await call('salvaIncassi',[lista]);
+    const arr=Array.isArray(res)?res:[res];
+    const ok=arr.filter(r=>r&&!r.errore),ko=arr.filter(r=>r&&r.errore);
+    const cred=ok.filter(r=>num(r.daPagare)>0);
+    ok.filter(r=>r.nuovo).forEach(r=>CL.push({cid:r.cid,nome:r.nome,k:norm(r.nome),k2:norm(String(r.nome).split(' ').reverse().join(' '))}));
+    let h='';
+    if(ok.length)h+=`<div class="msg ok"><b>✓ Salvat${ok.length===1?'a 1 voce':'e '+ok.length+' voci'}</b>`+
+      ok.map(r=>`${esc(r.nome)} · riga ${esc(r.riga)}${r.nuovo?' · nuovo CID '+esc(r.cid):''}${r.scad?' · scade '+esc(r.scad):''}`).join('<br>')+
+      (cred.length?'<br><span style="color:var(--red);font-weight:600">Da incassare: '+cred.map(r=>esc(r.nome)+' '+esc(r.daPagare)).join(', ')+'</span>':'')+'</div>';
+    if(ko.length)h+=`<div class="msg err">${ko.map(r=>esc(r.errore)).join('<br>')}</div>`;
+    $('esito').innerHTML=h;
+    coda=[];pulisci();disegnaCoda();
+    if(navigator.vibrate)navigator.vibrate(30);
+  }catch(e){
+    if(/PIN/.test(e.message)){location.reload();return}
+    errore(e.message+' Nessuna voce persa: la lista è ancora qui, riprova.');
+  }finally{busy=false;$('salva').disabled=$('aggiungi').disabled=false;disegnaCoda()}
+};
+window.addEventListener('beforeunload',e=>{if(coda.length){e.preventDefault();e.returnValue=''}});
+
+const saved=ld('cont-admin');
+if(saved)entra(saved,true);else{$('login').hidden=false;setTimeout(()=>$('pin').focus(),50)}
+})();
+</script>
+</body>
+</html>
