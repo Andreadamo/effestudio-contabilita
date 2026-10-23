@@ -88,10 +88,11 @@ button:disabled{opacity:.6}
       const cached=ld("cont-page");
       if(cached){
         // la grafica è già sul telefono: apertura immediata, aggiornamento in background per la prossima volta
-        call({fn:"pagina",pin}).then(p=>st("cont-page",p)).catch(()=>{});
+        const ts=+ld("cont-page-ts")||0;
+        if(Date.now()-ts>6*3600*1000)call({fn:"pagina",pin}).then(p=>{st("cont-page",p);st("cont-page-ts",String(Date.now()))}).catch(()=>{});
         st("cont-admin",pin);show(cached,pin);return;
       }
-      const p=await call({fn:"pagina",pin});st("cont-page",p);st("cont-admin",pin);show(p,pin);
+      const p=await call({fn:"pagina",pin});st("cont-page",p);st("cont-page-ts",String(Date.now()));st("cont-admin",pin);show(p,pin);
     }catch(e){
       $("wait").hidden=true;$("login").hidden=false;
       if(/PIN/.test(e.message))st("cont-admin",null);

@@ -8,3 +8,7 @@ Pagina di ingresso su GitHub Pages per la Console Contabilità (solo amministraz
 ## Nuovo incasso da telefono (`incasso.html`)
 - Stesso PIN amministrazione, stesso backend: chiama `getInitData`, `infoCliente`, `salvaIncassi` (le funzioni della sidebar "Nuovo incasso" del foglio).
 - Richiede `backend/ApiHub.gs` aggiornato nel progetto Apps Script + nuova versione del deployment "API HUB GitHub" (stesso URL).
+
+## Velocità
+- Backend: `getConsole`/`getGlobale` con cache server (30 min, chiave = giorno + ultima modifica file + versione azzerata a ogni nuovo incasso).
+- Pagina console in cache sul telefono: riscaricata solo dopo 6 ore.
