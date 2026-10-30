@@ -51,6 +51,13 @@ function contabOwner_() {
 // Foglio "Effestudio – Proiezione cassa 12 mesi e allerta art. 3 CCII", tab DASH_DATA (tabelle già pronte per la dashboard).
 const PROIEZIONE_SS = '1F3s7dg06d9UC4E88ZA2mwfJB6r7SaywgLdh5Bn9iiFA';
 
+function tab_(name, a1) {
+  const sh = SpreadsheetApp.openById(PROIEZIONE_SS).getSheetByName(name);
+  if (!sh) return { head: [], rows: [] };
+  const v = sh.getRange(a1).getDisplayValues();
+  return { head: v[0], rows: v.slice(1).filter(function (r) { return String(r[0]).trim() !== ''; }) };
+}
+
 function getProiezione() {
   const sh = SpreadsheetApp.openById(PROIEZIONE_SS).getSheetByName('DASH_DATA');
   if (!sh) throw new Error('Tab DASH_DATA non trovato nel foglio di proiezione.');
@@ -75,6 +82,8 @@ function getProiezione() {
     scadenze: block(35, 38, 60),   // AJ:AM
     retro: block(40, 55, 23),      // AO:BD ricostruzione gen 2025 – ott 2026
     retro_gen25: block(57, 63, 13),// BF:BL proiezione fatta a gen 2025 vs reale
+    storico_cruscotto: tab_('STORICO CRUSCOTTO', 'A1:V40'),   // cruscotto mese per mese gen 2025 – ott 2026
+    storico_proiezioni: tab_('STORICO PROIEZIONI', 'A1:E300'),// proiezioni 12 mesi fatte a ogni cruscotto
     letto: Utilities.formatDate(new Date(), 'Europe/Rome', 'dd/MM/yyyy HH:mm')
   };
 }

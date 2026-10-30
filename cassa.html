@@ -68,6 +68,14 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
 .loading{padding:40px;text-align:center;color:var(--mute)}
 @media (max-width:600px){.tile .n{font-size:24px}header.top h1{font-size:20px}.wrap{padding:12px 10px 48px}.card{padding:12px}}
 @media (pointer:coarse){input{font-size:16px!important}}
+.scg td,.scg th{text-align:center;padding:3px 5px;cursor:pointer}
+.scg td:first-child,.scg th:first-child{text-align:left;white-space:nowrap;cursor:default}
+.scg .sel{outline:2px solid var(--blue);outline-offset:-2px;border-radius:3px}
+#sc-sel{font:inherit;font-size:17px;border:1px solid var(--line);border-radius:6px;padding:2px 4px;background:#fff}
+.sct{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:10px}
+.sct>div{border:1px solid var(--line);border-radius:6px;padding:6px 9px}
+.sct .l{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.sct .v{font-weight:600;font-variant-numeric:tabular-nums}
 </style>
 <script src="config.js"></script>
 </head>
@@ -147,6 +155,29 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
         <h2>Scostamenti previsto vs reale</h2>
         <div class="note">Aggiornato a fine mese. Oltre ±10% scatta l'azione correttiva.</div>
         <div class="tw"><table><thead><tr><th>Mese</th><th class="num">Incassi previsti</th><th class="num">Incassi reali</th><th class="num">Δ %</th><th class="num">Uscite previste</th><th class="num">Uscite reali</th><th class="num">Δ %</th><th>Esito</th></tr></thead><tbody id="tb-scost"></tbody></table></div>
+      </section>
+
+      <h2 class="sec">Storico del cruscotto art. 3: gen 2025 – ott 2026</h2>
+      <p class="secnote">Il cruscotto come sarebbe uscito a ogni inizio mese, con i soli saldi e dati disponibili allora. Tocca un mese per aprirlo. ⚪ = estratti ott–nov 2025 mancanti.</p>
+      <section class="card">
+        <h2>Semafori mese per mese</h2>
+        <div class="note">Copertura: 🔴 &lt;1 · 🟠 &lt;2 · 🟡 &lt;3 · 🟢 ≥3 mesi (target 6). Test 12 mesi: 🔴 liquidità prevista negativa · 🟡 minimo &lt;1 mese di uscite.</div>
+        <div class="tw"><table class="scg" id="tb-scg"></table></div>
+      </section>
+      <section class="grid2">
+        <div class="card">
+          <h2>Mesi di copertura nel tempo</h2>
+          <div class="note">Liquidità fine mese ÷ uscite medie 3 mesi. Tratteggi: soglia 3 e target 6.</div>
+          <div class="chart" id="c-sc-cop"></div>
+        </div>
+        <div class="card">
+          <h2>Cruscotto di <select id="sc-sel" aria-label="Mese del cruscotto"></select></h2>
+          <div class="note">Proiezione 12 mesi fatta allora (tratteggio) vs liquidità reale (linea).</div>
+          <div class="sct" id="sc-tiles"></div>
+          <div class="chart" id="c-sc-tm"></div>
+          <div class="legend" style="margin-top:6px"><span><i class="ds" style="border-color:var(--blue)"></i>Prevista allora</span><span><i class="ln" style="background:var(--orange)"></i>Reale</span></div>
+          <div class="note" id="sc-az"></div>
+        </div>
       </section>
 
       <h2 class="sec">Ricostruzione a ritroso: gen 2025 – ott 2026</h2>
@@ -302,7 +333,7 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
     $("tb-scad").innerHTML=sc.length?sc.map(r=>`<tr><td>${esc(data(r.data))}</td><td>${esc(r.voce)}</td><td class="num">${eur(r.importo)}</td><td class="mute">${esc(r.stato)}</td></tr>`).join(""):`<tr><td colspan="4" class="mute">Nessun pagamento nei prossimi 30 giorni.</td></tr>`;
     $("tb-scost").innerHTML=rows(DATA.scostamenti).map(r=>{const fl=v=>{const n=num(v);return n!==null&&Math.abs(n)>0.1?"bad":""};
       return `<tr><td>${esc(mese(r.mese))}</td><td class="num">${eur(r.inc_prev)}</td><td class="num">${eur(r.inc_reale)}</td><td class="num ${fl(r.inc_delta_pct)}">${pct(r.inc_delta_pct)}</td><td class="num">${eur(r.usc_prev)}</td><td class="num">${eur(r.usc_reale)}</td><td class="num ${fl(r.usc_delta_pct)}">${pct(r.usc_delta_pct)}</td><td>${esc(r.esito)}</td></tr>`}).join("");
-    renderRetro();drawCharts();
+    renderStorico();renderRetro();drawCharts();
   }
 
   function chartRFlussi(){
@@ -332,7 +363,60 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
     const fl=v=>{const n=num(v);return n!==null&&Math.abs(n)>0.1?"bad":""};
     $("tb-retro").innerHTML=rows(DATA.retro).map(r=>`<tr><td>${esc(mese(r.mese))}</td><td class="num ${fl(r.inc_dpct)}">${pct(r.inc_dpct)}</td><td class="num ${fl(r.usc_dpct)}">${pct(r.usc_dpct)}</td><td>${esc(r.esito)}</td><td class="num">${r.copertura?dec1(r.copertura):"—"}</td><td class="${tone(r.fornitori)}">${esc(r.fornitori)}</td></tr>`).join("")||'<tr><td colspan="6" class="mute">Dati non disponibili.</td></tr>';
   }
-  function drawCharts(){if(!DATA)return;chartLiq();chartFlussi();chartCat();chartStorico();chartRFlussi();chartRCassa()}
+
+  /* ---------- storico cruscotto ---------- */
+  let SCSEL=null;
+  const scRows=()=>rows(DATA.storico_cruscotto);
+  function renderStorico(){
+    const R=scRows();const t=$("tb-scg");
+    if(!R.length){t.innerHTML='<tr><td class="mute">Dati non disponibili: aggiorna ApiHub.gs.</td></tr>';$("sc-sel").innerHTML="";return}
+    if(!SCSEL||!R.find(r=>r.data_saldi===SCSEL))SCSEL=R[R.length-1].data_saldi;
+    const L=[["sem_copertura","Copertura"],["test_12m","Test 12 mesi"],["stipendi","Stipendi"],["fornitori","Fornitori"],["banche","Banche"],["fisco","Fisco"],["esito","Esito"]];
+    const cell=(r,v)=>`<td data-k="${esc(r.data_saldi)}"${r.data_saldi===SCSEL?' class="sel"':''}>${esc(v)}</td>`;
+    t.innerHTML=`<thead><tr><th>Cruscotto di</th>${R.map(r=>`<th data-k="${esc(r.data_saldi)}"${r.data_saldi===SCSEL?' class="sel"':''}>${esc(r.cruscotto)}</th>`).join("")}</tr></thead><tbody>`+
+      L.map(([k,l])=>`<tr><td>${l}</td>${R.map(r=>cell(r,r[k]||"")).join("")}</tr>`).join("")+
+      `<tr><td>Mesi copertura</td>${R.map(r=>cell(r,num(r.copertura)===null?"—":dec1(r.copertura))).join("")}</tr>`+
+      `<tr><td>Liq. min prevista (k€)</td>${R.map(r=>cell(r,num(r.liq_min_prev)===null?"—":Math.round(num(r.liq_min_prev)/1000))).join("")}</tr></tbody>`;
+    t.querySelectorAll("[data-k]").forEach(e=>e.onclick=()=>scPick(e.dataset.k));
+    const sel=$("sc-sel");sel.innerHTML=R.map(r=>`<option value="${esc(r.data_saldi)}">${esc(r.cruscotto)}</option>`).join("");sel.value=SCSEL;sel.onchange=()=>scPick(sel.value);
+    renderSTm();
+  }
+  function scPick(k){SCSEL=k;$("sc-sel").value=k;$("tb-scg").querySelectorAll("[data-k]").forEach(e=>e.classList.toggle("sel",e.dataset.k===k));renderSTm()}
+  function renderSTm(){
+    const r=scRows().find(q=>q.data_saldi===SCSEL);if(!r){$("sc-tiles").innerHTML="";$("c-sc-tm").innerHTML="";return}
+    const T=[["Liquidità fine "+mese(r.data_saldi),num(r.liquidita)===null?"DA VERIFICARE":eur(r.liquidita)],["Copertura",num(r.copertura)===null?"⚪ n.d.":(r.sem_copertura||"")+" "+dec1(r.copertura)+" mesi"],["Riserva 6 mesi / mancano",eur(r.riserva_target)+" / "+eur(r.gap_riserva)],["Liq. minima prevista",num(r.liq_min_prev)===null?"—":eur(r.liq_min_prev)+" ("+mese(r.mese_min_prev)+")"],["Test 12 mesi",r.test_12m||""],["Segnali art. 3","Stip. "+r.stipendi+" Forn. "+r.fornitori+" Banche "+r.banche+" Fisco "+r.fisco],["Liq. a 12 mesi prev. / reale",eur(r.liq_12m_prev)+" / "+(num(r.liq_12m_reale)===null?"n.d.":eur(r.liq_12m_reale))]];
+    $("sc-tiles").innerHTML=T.map(([l,v])=>`<div><div class="l">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("");
+    $("sc-az").innerHTML=`<b>Azione indicata:</b> ${esc(r.azione||"—")}<br>Fornitori: ${esc(r.nota_fornitori||"")} · Perimetro: ${esc(r.perimetro||"")}`;
+    chartSTm(r);
+  }
+  function chartSTm(r){
+    const P=rows(DATA.storico_proiezioni).filter(q=>q.data_saldi===r.data_saldi).map(q=>({mese:q.mese,p:num(q.liq_prev),re:num(q.liq_reale)}));
+    if(!P.length){$("c-sc-tm").innerHTML='<p class="mute">Proiezione non disponibile.</p>';return}
+    const tgt=num(r.riserva_target)||0,vals=P.flatMap(q=>[q.p,q.re]).filter(v=>v!==null);
+    const f=frame($("c-sc-tm"),220,Math.min(0,...vals),Math.max(tgt,...vals)*1.05,P.map(q=>mese(q.mese)));
+    const cx=i=>f.x(i)+f.bw/2;
+    if(tgt){el("line",{x1:f.m.l,x2:f.W-f.m.r,y1:f.y(tgt),y2:f.y(tgt),stroke:"#2E8B57","stroke-dasharray":"5 4"},f.svg);txt(f.svg,f.W-f.m.r,f.y(tgt)-4,"Riserva target "+eur(tgt),"end")}
+    const seg=(k,c,d)=>{let cur=[];const out=[];P.forEach((q,i)=>{if(q[k]===null){if(cur.length)out.push(cur);cur=[]}else cur.push(`${cx(i)},${f.y(q[k])}`)});if(cur.length)out.push(cur);out.forEach(pts=>el("polyline",{points:pts.join(" "),fill:"none",stroke:c,"stroke-width":2,"stroke-dasharray":d?"6 4":"none"},f.svg))};
+    seg("p","#2F5FD0",1);seg("re","#D9822B",0);
+    P.forEach((q,i)=>{if(q.re!==null)el("circle",{cx:cx(i),cy:f.y(q.re),r:3,fill:"#D9822B"},f.svg)});
+    hover(f,P.length,i=>[mese(P[i].mese),["Prevista allora",P[i].p===null?"n.d.":eur(P[i].p),"#2F5FD0"],["Reale",P[i].re===null?"n.d.":eur(P[i].re),"#D9822B"]]);
+  }
+  function chartSCop(){
+    const R=scRows().map(r=>({k:r.data_saldi,lab:r.cruscotto,c:num(r.copertura),l:num(r.liquidita),s:r.sem_copertura,e:r.esito,rt:num(r.riserva_target)}));
+    if(!R.length){$("c-sc-cop").innerHTML='<p class="mute">Dati non disponibili.</p>';return}
+    const hi=Math.max(6.5,...R.map(r=>r.c||0))*1.05;
+    const f=frame($("c-sc-cop"),260,0,hi,R.map(r=>r.lab),34);
+    f.svg.querySelectorAll("text").forEach(t=>{if(/€$/.test(t.textContent))t.textContent=t.textContent.replace("€","")});
+    const cx=i=>f.x(i)+f.bw/2,lmax=Math.max(...R.map(r=>r.l||0))*1.1;
+    R.forEach((r,i)=>{if(r.l!==null){const w=f.bw*.6,yy=f.m.t+(1-r.l/lmax)*(f.H-f.m.t-f.m.b);el("rect",{x:f.x(i)+(f.bw-w)/2,y:yy,width:w,height:f.H-f.m.b-yy,rx:2,fill:"#D9822B",opacity:.18},f.svg)}});
+    [[3,"soglia 3","#9AA6B4"],[6,"target 6","#2E8B57"]].forEach(([v,l,c])=>{el("line",{x1:f.m.l,x2:f.W-f.m.r,y1:f.y(v),y2:f.y(v),stroke:c,"stroke-dasharray":"5 4","stroke-width":1.5},f.svg);txt(f.svg,f.m.l+4,f.y(v)-4,l)});
+    let cur=[];const segs=[];R.forEach((r,i)=>{if(r.c===null){if(cur.length)segs.push(cur);cur=[]}else cur.push(`${cx(i)},${f.y(r.c)}`)});if(cur.length)segs.push(cur);
+    segs.forEach(p=>el("polyline",{points:p.join(" "),fill:"none",stroke:"#2F5FD0","stroke-width":2.5,"stroke-linejoin":"round"},f.svg));
+    R.forEach((r,i)=>{if(r.c!==null)el("circle",{cx:cx(i),cy:f.y(r.c),r:3,fill:"#2F5FD0"},f.svg)});
+    hover(f,R.length,i=>{const r=R[i];return ["Cruscotto di "+r.lab,["Copertura",r.c===null?"n.d.":dec1(r.c)+" mesi "+(r.s||""),"#2F5FD0"],["Liquidità",r.l===null?"DA VERIFICARE":eur(r.l),"#D9822B"],["Riserva target",eur(r.rt)],["Esito",r.e||""]]});
+    f.svg.querySelectorAll("rect[fill=transparent]").forEach((x,i)=>x.addEventListener("click",()=>scPick(R[i].k)));
+  }
+  function drawCharts(){if(!DATA)return;chartLiq();chartFlussi();chartCat();chartStorico();chartSCop();if(SCSEL)renderSTm();chartRFlussi();chartRCassa()}
   let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(drawCharts,150)});
 
   /* ---------- accesso e caricamento ---------- */
