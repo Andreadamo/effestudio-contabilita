@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<meta name="theme-color" content="#14263B">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<title>Cassa 12 mesi · Effestudio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{--ink:#14263B;--paper:#F3F5F7;--card:#fff;--line:#D7DDE5;--mute:#5E6B7A;--blue:#2F5FD0;--blue2:#9DB4EA;--orange:#D9822B;--red:#B83A2E;--red-soft:#FBE3E0;--green:#2E8B57;--grid:#E8ECF1}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.45 Barlow,Arial,sans-serif;-webkit-text-size-adjust:100%}
+button{font:inherit;font-weight:600;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:10px 14px;cursor:pointer;touch-action:manipulation}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:.6}
+[hidden]{display:none!important}
+.box{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.box h1{font:700 26px/1.1 'Barlow Condensed';margin:0 0 4px}
+.box p{color:var(--mute);margin:0 0 16px}
+.lcard{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.lcard input{font:inherit;font-size:18px;padding:12px;border:1px solid var(--line);border-radius:6px;width:100%}
+.err{background:var(--red-soft);color:var(--red);border-radius:6px;padding:10px;font-weight:600;font-size:14px}
+
+header.top{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px}
+header.top .in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top h1{font:700 22px/1.1 'Barlow Condensed';margin:0;flex:1;min-width:180px}
+header.top small{display:block;font:400 12px Barlow;opacity:.75}
+header.top button{background:rgba(255,255,255,.12);padding:8px 12px;font-size:13px}
+.wrap{max-width:1280px;margin:0 auto;padding:16px 16px calc(48px + env(safe-area-inset-bottom));display:grid;gap:14px}
+.lead{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:16px}
+.lead b{font-weight:600}
+.tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.tile .l{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.tile .n{font:600 28px/1.15 'Barlow Condensed';margin:4px 0;font-variant-numeric:tabular-nums}
+.tile .t{font-weight:600;margin:6px 0}
+.tile .s{font-size:12px;color:var(--mute)}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.card h2{font:600 19px/1.2 'Barlow Condensed';margin:0}
+.card .note{font-size:12px;color:var(--mute);margin:2px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin-bottom:6px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend i.ln{height:3px}
+.legend i.ds{height:0;border-top:2px dashed var(--mute)}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font:12px Barlow,sans-serif;fill:var(--mute)}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 14px rgba(20,38,59,.15);padding:6px 9px;font-size:12px;white-space:nowrap;z-index:3}
+.tip .h{color:var(--mute);margin-bottom:2px}
+.tip .r{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.tw{overflow:auto;max-height:440px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-weight:600;color:var(--mute);border-bottom:1px solid var(--line);padding:6px;position:sticky;top:0;background:var(--card)}
+td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
+.num{text-align:right;white-space:nowrap}
+.mute{color:var(--mute)}
+.bad{color:var(--red);font-weight:600}
+.ok{color:var(--green);font-weight:600}
+.foot{font-size:12px;color:var(--mute)}
+.loading{padding:40px;text-align:center;color:var(--mute)}
+@media (max-width:600px){.tile .n{font-size:24px}header.top h1{font-size:20px}.wrap{padding:12px 10px 48px}.card{padding:12px}}
+@media (pointer:coarse){input{font-size:16px!important}}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="box" id="login" hidden>
+  <h1>Cassa 12 mesi</h1>
+  <p>Solo amministrazione. Inserisci il PIN amministrazione (lo stesso di EffeOre).</p>
+  <div class="lcard">
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN amministrazione">
+    <button id="go">Entra</button>
+    <div class="err" id="err" hidden></div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top"><div class="in">
+    <h1>Cassa 12 mesi e allerta crisi<small id="letto">—</small></h1>
+    <button id="refresh">Aggiorna</button>
+    <button id="out">Esci</button>
+  </div></header>
+  <main class="wrap">
+    <div class="loading" id="loading">Carico i dati…</div>
+    <div class="err" id="err2" hidden></div>
+    <div id="dash" hidden style="display:grid;gap:14px">
+      <div class="lead" id="lead"></div>
+      <section class="tiles">
+        <div class="tile"><div class="l">Liquidità attuale</div><div class="n" id="t-liq">—</div><div class="s" id="t-liq-s">—</div></div>
+        <div class="tile"><div class="l">Mesi di copertura</div><div class="n" id="t-mesi">—</div><div class="s" id="t-mesi-s">—</div></div>
+        <div class="tile"><div class="l">Liquidità minima 12 mesi</div><div class="n" id="t-min">—</div><div class="s" id="t-min-s">—</div></div>
+        <div class="tile"><div class="l">Debiti sostenibili 12 mesi</div><div class="t" id="t-test">—</div><div class="s" id="t-test-s">—</div></div>
+        <div class="tile"><div class="l">Segnali art. 3</div><div class="t" id="t-art3">—</div><div class="s">Stipendi, fornitori, banche, fisco</div></div>
+      </section>
+
+      <section class="grid2">
+        <div class="card">
+          <h2>Liquidità a fine mese</h2>
+          <div class="note">Prossimi 12 mesi. Barre = flusso netto del mese; tratteggio = riserva target.</div>
+          <div class="legend"><span><i class="ln" style="background:var(--blue)"></i>Liquidità</span><span><i style="background:var(--green)"></i>Netto +</span><span><i style="background:var(--red)"></i>Netto −</span><span><i class="ds"></i>Riserva target</span></div>
+          <div class="chart" id="c-liq"></div>
+        </div>
+        <div class="card">
+          <h2>Incassi e uscite previste</h2>
+          <div class="note">Uscite = operative + debiti societari (cambiali).</div>
+          <div class="legend"><span><i style="background:var(--blue)"></i>Incassi</span><span><i style="background:var(--blue2)"></i>Uscite operative</span><span><i style="background:var(--red)"></i>Debiti societari</span></div>
+          <div class="chart" id="c-flussi"></div>
+        </div>
+      </section>
+
+      <section class="grid2">
+        <div class="card">
+          <h2>Segnali d'allarme (art. 3 c.4 CCII)</h2>
+          <div class="note">⚪ = dato da inserire nel foglio, tab CRUSCOTTO ART3.</div>
+          <div class="tw"><table><thead><tr><th>Segnale</th><th>Esito</th><th>Stato rilevato</th></tr></thead><tbody id="tb-seg"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h2>Pagamenti nei prossimi 30 giorni</h2>
+          <div class="note">Dallo scadenzario, esclusi quelli segnati "Pagato".</div>
+          <div class="tw"><table><thead><tr><th>Data</th><th>Voce</th><th class="num">Importo</th><th>Stato</th></tr></thead><tbody id="tb-scad"></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="grid2">
+        <div class="card">
+          <h2>Uscite previste per categoria</h2>
+          <div class="note">Totale prossimi 12 mesi.</div>
+          <div class="chart" id="c-cat"></div>
+        </div>
+        <div class="card">
+          <h2>Storico 2026: incassi e uscite operative</h2>
+          <div class="note">Banca + SumUp + PayPal, esclusi finanziamenti soci, giroconti, acquisizione LAB.</div>
+          <div class="legend"><span><i style="background:var(--blue)"></i>Incassi</span><span><i style="background:var(--blue2)"></i>Uscite operative</span></div>
+          <div class="chart" id="c-storico"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Scostamenti previsto vs reale</h2>
+        <div class="note">Aggiornato a fine mese. Oltre ±10% scatta l'azione correttiva.</div>
+        <div class="tw"><table><thead><tr><th>Mese</th><th class="num">Incassi previsti</th><th class="num">Incassi reali</th><th class="num">Δ %</th><th class="num">Uscite previste</th><th class="num">Uscite reali</th><th class="num">Δ %</th><th>Esito</th></tr></thead><tbody id="tb-scost"></tbody></table></div>
+      </section>
+
+      <p class="foot">Fonte: foglio "Effestudio – Proiezione cassa 12 mesi e allerta art. 3 CCII" (tab DASH_DATA), aggiornato a fine mese dalla Contabilità. I dati non vengono salvati sul dispositivo.</p>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const ld=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  const st=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  const PIN_KEY="cont-admin"; // stesso accesso della Console Contabilità
+  let PIN=null, DATA=null;
+
+  async function call(body){
+    let r;try{r=await fetch(window.CONT_API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body),redirect:"follow",cache:"no-store"})}
+    catch(e){throw new Error("Connessione non riuscita. Controlla internet e riprova.")}
+    let j;try{j=await r.json()}catch(e){throw new Error("Risposta non valida dal server ("+r.status+"). Riprova tra poco.")}
+    if(!j.ok)throw new Error(j.error||"Errore sconosciuto.");return j.data;
+  }
+
+  /* ---------- formattazione ---------- */
+  const MESI=["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+  const EUR=new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0,useGrouping:"always"});
+  const num=v=>{if(v===null||v===undefined)return null;const s=String(v).trim();if(s==="")return null;const n=Number(s);return isNaN(n)?null:n};
+  const eur=v=>{const n=num(v);return n===null?"—":EUR.format(n)};
+  const kE=v=>{const n=Math.abs(v);return (v<0?"−":"")+(n>=1000?Math.round(n/1000)+"k":Math.round(n))+"€"};
+  const pct=v=>{const n=num(v);return n===null?"—":(n>=0?"+":"")+(n*100).toFixed(1).replace(".",",")+"%"};
+  const dec1=v=>{const n=num(v);return n===null?"—":n.toFixed(1).replace(".",",")};
+  const mese=s=>{if(!s)return"—";const[y,m]=String(s).split("-");return m?MESI[+m-1]+" "+y.slice(2):s};
+  const data=s=>{if(!s)return"—";const[y,m,d]=String(s).split("-");return d?d+"/"+m+"/"+y:s};
+  const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const rows=b=>(b&&b.rows||[]).map(r=>Object.fromEntries(b.head.map((h,i)=>[h,r[i]])));
+  const kpi=id=>{const r=rows(DATA.kpi).find(x=>x.id===id);return r?r.value:null};
+
+  /* ---------- grafici SVG ---------- */
+  const NS="http://www.w3.org/2000/svg";
+  function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.append(e);return e}
+  function txt(parent,x,y,s,anchor){const t=el("text",{x,y,"text-anchor":anchor||"start"},parent);t.textContent=s;return t}
+  function niceTicks(lo,hi,n){const span=hi-lo||1,step0=span/n,mag=Math.pow(10,Math.floor(Math.log10(step0))),f=step0/mag,step=(f<1.5?1:f<3?2:f<7?5:10)*mag;const a=Math.floor(lo/step)*step,b=Math.ceil(hi/step)*step,out=[];for(let v=a;v<=b+step/2;v+=step)out.push(+v.toFixed(6));return out}
+  function frame(box,H,lo,hi,labels,ml){
+    box.innerHTML="";
+    const W=Math.max(320,box.clientWidth),m={t:12,r:10,b:24,l:ml||50};
+    const ticks=niceTicks(lo,hi,5);lo=ticks[0];hi=ticks[ticks.length-1];
+    const y=v=>m.t+(hi-v)/(hi-lo)*(H-m.t-m.b);
+    const bw=(W-m.l-m.r)/labels.length,x=i=>m.l+i*bw;
+    const svg=el("svg",{viewBox:`0 0 ${W} ${H}`},box);
+    ticks.forEach(t=>{el("line",{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),stroke:t===0?"#9AA6B4":"#E8ECF1"},svg);txt(svg,m.l-6,y(t)+4,kE(t),"end")});
+    const every=Math.ceil(labels.length/Math.max(1,Math.floor((W-m.l)/48)));
+    labels.forEach((l,i)=>{if(i%every===0)txt(svg,x(i)+bw/2,H-6,l,"middle")});
+    const tip=document.createElement("div");tip.className="tip";tip.hidden=true;box.append(tip);
+    return {svg,W,H,m,y,x,bw,tip,lo,hi};
+  }
+  function hover(f,n,lines){
+    for(let i=0;i<n;i++){
+      const r=el("rect",{x:f.x(i),y:f.m.t,width:f.bw,height:f.H-f.m.t-f.m.b,fill:"transparent"},f.svg);
+      const show=ev=>{const L=lines(i);f.tip.innerHTML=`<div class="h">${esc(L[0])}</div>`+L.slice(1).map(([k,v,c])=>`<div class="r"><span>${c?`<i style="display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;background:${c}"></i>`:""}${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
+        f.tip.hidden=false;const bx=f.svg.getBoundingClientRect(),sc=bx.width/f.W;const px=(f.x(i)+f.bw/2)*sc;
+        f.tip.style.left=Math.max(0,Math.min(bx.width-f.tip.offsetWidth,px+10))+"px";f.tip.style.top=Math.max(0,(f.m.t+10)*sc)+"px"};
+      r.addEventListener("mousemove",show);r.addEventListener("click",show);r.addEventListener("mouseleave",()=>f.tip.hidden=true);
+    }
+  }
+
+  function chartLiq(){
+    const R=rows(DATA.mesi).map(r=>({mese:r.mese,netto:num(r.netto),liq:num(r.liquidita_fine),cop:num(r.copertura),sem:r.semaforo}));
+    const target=num(kpi("riserva_target"));
+    const lo=Math.min(0,...R.map(r=>r.netto)),hi=Math.max(...R.map(r=>r.liq),target||0)*1.05;
+    const f=frame($("c-liq"),270,lo,hi,R.map(r=>mese(r.mese)));
+    R.forEach((r,i)=>{const w=Math.min(28,f.bw*.55),y0=f.y(0),y1=f.y(r.netto);el("rect",{x:f.x(i)+(f.bw-w)/2,y:Math.min(y0,y1),width:w,height:Math.abs(y1-y0),rx:2,fill:r.netto>=0?"#2E8B57":"#B83A2E",opacity:.55},f.svg)});
+    if(target){el("line",{x1:f.m.l,x2:f.W-f.m.r,y1:f.y(target),y2:f.y(target),stroke:"#5E6B7A","stroke-dasharray":"5 4"},f.svg);txt(f.svg,f.W-f.m.r,f.y(target)-5,"Riserva target "+eur(target),"end")}
+    const pts=R.map((r,i)=>`${f.x(i)+f.bw/2},${f.y(r.liq)}`).join(" ");
+    el("polyline",{points:pts,fill:"none",stroke:"#2F5FD0","stroke-width":2.5,"stroke-linejoin":"round","stroke-linecap":"round"},f.svg);
+    R.forEach((r,i)=>el("circle",{cx:f.x(i)+f.bw/2,cy:f.y(r.liq),r:3,fill:"#2F5FD0"},f.svg));
+    hover(f,R.length,i=>[mese(R[i].mese),["Liquidità fine mese",eur(R[i].liq),"#2F5FD0"],["Flusso netto",eur(R[i].netto)],["Copertura",dec1(R[i].cop)+" mesi"],["Semaforo",R[i].sem||""]]);
+  }
+  function chartFlussi(){
+    const R=rows(DATA.mesi).map(r=>({mese:r.mese,inc:num(r.incassi),usc:num(r.uscite_op),deb:num(r.debiti),net:num(r.netto)}));
+    const f=frame($("c-flussi"),270,0,Math.max(...R.map(r=>Math.max(r.inc,r.usc+r.deb)))*1.05,R.map(r=>mese(r.mese)));
+    R.forEach((r,i)=>{const w=Math.min(22,f.bw*.36),x0=f.x(i)+f.bw/2-w-1,x1=f.x(i)+f.bw/2+1;
+      el("rect",{x:x0,y:f.y(r.inc),width:w,height:f.y(0)-f.y(r.inc),rx:2,fill:"#2F5FD0"},f.svg);
+      el("rect",{x:x1,y:f.y(r.usc),width:w,height:f.y(0)-f.y(r.usc),fill:"#9DB4EA"},f.svg);
+      if(r.deb>0)el("rect",{x:x1,y:f.y(r.usc+r.deb),width:w,height:f.y(r.usc)-f.y(r.usc+r.deb),fill:"#B83A2E"},f.svg)});
+    hover(f,R.length,i=>[mese(R[i].mese),["Incassi",eur(R[i].inc),"#2F5FD0"],["Uscite operative",eur(R[i].usc),"#9DB4EA"],["Debiti societari",eur(R[i].deb),"#B83A2E"],["Flusso netto",eur(R[i].net)]]);
+  }
+  function chartStorico(){
+    const R=rows(DATA.storico).map(r=>({mese:r.mese,inc:num(r.incassi),usc:num(r.uscite),net:num(r.netto)}));
+    const f=frame($("c-storico"),240,0,Math.max(...R.map(r=>Math.max(r.inc,r.usc)))*1.05,R.map(r=>mese(r.mese)));
+    R.forEach((r,i)=>{const w=Math.min(22,f.bw*.36),x0=f.x(i)+f.bw/2-w-1,x1=f.x(i)+f.bw/2+1;
+      el("rect",{x:x0,y:f.y(r.inc),width:w,height:f.y(0)-f.y(r.inc),rx:2,fill:"#2F5FD0"},f.svg);
+      el("rect",{x:x1,y:f.y(r.usc),width:w,height:f.y(0)-f.y(r.usc),rx:2,fill:"#9DB4EA"},f.svg)});
+    hover(f,R.length,i=>[mese(R[i].mese),["Incassi",eur(R[i].inc),"#2F5FD0"],["Uscite operative",eur(R[i].usc),"#9DB4EA"],["Netto",eur(R[i].net)]]);
+  }
+  function chartCat(){
+    const box=$("c-cat");box.innerHTML="";
+    const R=rows(DATA.categorie).map(r=>({c:r.categoria,v:num(r.totale)})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);
+    const W=Math.max(320,box.clientWidth),rh=22,H=R.length*rh+6,max=Math.max(...R.map(r=>r.v));
+    const svg=el("svg",{viewBox:`0 0 ${W} ${H}`},box);
+    const probe=txt(svg,0,0,"");let lw=0;R.forEach(r=>{probe.textContent=r.c;lw=Math.max(lw,probe.getComputedTextLength())});
+    probe.textContent=eur(max);const vw=probe.getComputedTextLength();probe.remove();lw=Math.min(lw,W*.45);
+    const sc=Math.max(40,W-lw-vw-26)/max;
+    R.forEach((r,i)=>{const y=i*rh+3;
+      const t=txt(svg,lw,y+rh/2+4,r.c,"end");t.style.fill="#14263B";
+      el("rect",{x:lw+8,y:y+4,width:Math.max(1,r.v*sc),height:rh-8,rx:2,fill:/debiti/i.test(r.c)?"#B83A2E":(i===0?"#2F5FD0":"#9DB4EA")},svg);
+      txt(svg,lw+12+r.v*sc,y+rh/2+4,eur(r.v))});
+  }
+
+  /* ---------- tabelle e riquadri ---------- */
+  const tone=s=>/🔴|NON|Non regge/.test(s||"")?"bad":(/🟢/.test(s||"")?"ok":"");
+  function render(){
+    $("letto").textContent="Dati letti dal foglio: "+(DATA.letto||"—")+" · scenario "+(kpi("scenario")||"—");
+    const liq=kpi("liquidita"),mesi=kpi("mesi_copertura"),tgt=kpi("target_mesi");
+    $("lead").innerHTML=`Liquidità <b>${eur(liq)}</b>: copre <b>${dec1(mesi)}</b> mesi di uscite su un target di <b>${num(tgt)??"—"}</b>. Minimo previsto <b>${eur(kpi("liq_min"))}</b> a <b>${esc(mese(kpi("mese_min")))}</b>.`;
+    $("t-liq").textContent=eur(liq);$("t-liq-s").textContent="Saldi al "+data(kpi("data_saldi"));
+    $("t-mesi").textContent=dec1(mesi);$("t-mesi").className="n "+(num(mesi)<3?"bad":"");
+    $("t-mesi-s").textContent="Riserva target "+eur(kpi("riserva_target"))+" · mancano "+eur(kpi("gap_riserva"));
+    $("t-min").textContent=eur(kpi("liq_min"));$("t-min").className="n "+(num(kpi("liq_min"))<0?"bad":"");
+    $("t-min-s").textContent=mese(kpi("mese_min"))+" · con voci da verificare "+eur(kpi("liq_min_stress"));
+    $("t-test").textContent=kpi("test_12m")||"—";$("t-test").className="t "+tone(kpi("test_12m"));
+    $("t-test-s").textContent="Stress: "+(kpi("stress")||"—");
+    $("t-art3").textContent=kpi("esito_art3")||"—";$("t-art3").className="t "+tone(kpi("esito_art3"));
+    $("tb-seg").innerHTML=rows(DATA.segnali).map(r=>`<tr><td>${esc(r.segnale)}</td><td class="${tone(r.esito)}">${esc(r.esito)}</td><td class="mute">${esc(r.stato)}</td></tr>`).join("");
+    const sc=rows(DATA.scadenze);
+    $("tb-scad").innerHTML=sc.length?sc.map(r=>`<tr><td>${esc(data(r.data))}</td><td>${esc(r.voce)}</td><td class="num">${eur(r.importo)}</td><td class="mute">${esc(r.stato)}</td></tr>`).join(""):`<tr><td colspan="4" class="mute">Nessun pagamento nei prossimi 30 giorni.</td></tr>`;
+    $("tb-scost").innerHTML=rows(DATA.scostamenti).map(r=>{const fl=v=>{const n=num(v);return n!==null&&Math.abs(n)>0.1?"bad":""};
+      return `<tr><td>${esc(mese(r.mese))}</td><td class="num">${eur(r.inc_prev)}</td><td class="num">${eur(r.inc_reale)}</td><td class="num ${fl(r.inc_delta_pct)}">${pct(r.inc_delta_pct)}</td><td class="num">${eur(r.usc_prev)}</td><td class="num">${eur(r.usc_reale)}</td><td class="num ${fl(r.usc_delta_pct)}">${pct(r.usc_delta_pct)}</td><td>${esc(r.esito)}</td></tr>`}).join("");
+    drawCharts();
+  }
+  function drawCharts(){if(!DATA)return;chartLiq();chartFlussi();chartCat();chartStorico()}
+  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(drawCharts,150)});
+
+  /* ---------- accesso e caricamento ---------- */
+  async function load(){
+    $("loading").hidden=false;$("err2").hidden=true;$("refresh").disabled=true;
+    try{DATA=await call({fn:"getProiezione",pin:PIN,args:[]});$("dash").hidden=false;render()}
+    catch(e){
+      if(/PIN/.test(e.message)){st(PIN_KEY,null);location.reload();return}
+      $("err2").textContent=/non disponibile/.test(e.message)?"Il server non ha ancora la funzione getProiezione: aggiorna ApiHub.gs e pubblica una nuova versione del deployment \"API HUB GitHub\".":e.message;$("err2").hidden=false;
+    }finally{$("loading").hidden=true;$("refresh").disabled=false}
+  }
+  async function enter(pin,silent){
+    try{
+      await call({fn:"login",pin});
+      PIN=pin;st(PIN_KEY,pin);$("login").hidden=true;$("app").hidden=false;load();
+    }catch(e){
+      $("login").hidden=false;$("app").hidden=true;
+      if(/PIN/.test(e.message))st(PIN_KEY,null);
+      if(!silent||!/PIN/.test(e.message)){$("err").textContent=e.message;$("err").hidden=false}
+    }
+  }
+  $("go").onclick=()=>{const b=$("go");b.disabled=true;b.textContent="Verifico…";$("err").hidden=true;enter($("pin").value.trim()).finally(()=>{b.disabled=false;b.textContent="Entra"})};
+  $("pin").onkeydown=e=>{if(e.key==="Enter")$("go").click()};
+  $("refresh").onclick=load;
+  $("out").onclick=()=>{st(PIN_KEY,null);location.reload()};
+  const saved=ld(PIN_KEY);
+  if(saved){PIN=saved;$("app").hidden=false;load()}else{$("login").hidden=false;setTimeout(()=>$("pin").focus(),50)}
+})();
+</script>
+</body>
+</html>

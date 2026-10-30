@@ -1,7 +1,8 @@
 /***** API JSON per la Console su GitHub (andreadamo.github.io/effestudio-contabilita) *****/
 // Ogni chiamata richiede il PIN amministrazione (lo stesso di EffeOre, letto dal suo foglio Config).
 // getInitData, infoCliente, salvaIncassi = pagina "Nuovo incasso" da telefono (incasso.html), stesse funzioni della sidebar.
-const CONT_API_FN = ['getConsole', 'getCompensi', 'getGlobale', 'getInitData', 'infoCliente', 'salvaIncassi'];
+// getProiezione = pagina "Cassa 12 mesi" (cassa.html): legge il tab DASH_DATA del foglio di proiezione.
+const CONT_API_FN = ['getConsole', 'getCompensi', 'getGlobale', 'getInitData', 'infoCliente', 'salvaIncassi', 'getProiezione'];
 const HUB_EFFEORE_SS = '1k9yNCids2i18RNjSpMzizHQj-Mk_dt_7V-GkY-6MnYE';
 
 function doPost(e) {
@@ -44,4 +45,34 @@ function contabOwner_() {
     const a = Session.getActiveUser().getEmail();
     return !!a && a === Session.getEffectiveUser().getEmail();
   } catch (err) { return false; }
+}
+
+/***** Cassa 12 mesi e allerta crisi (cassa.html) *****/
+// Foglio "Effestudio – Proiezione cassa 12 mesi e allerta art. 3 CCII", tab DASH_DATA (tabelle già pronte per la dashboard).
+const PROIEZIONE_SS = '1F3s7dg06d9UC4E88ZA2mwfJB6r7SaywgLdh5Bn9iiFA';
+
+function getProiezione() {
+  const sh = SpreadsheetApp.openById(PROIEZIONE_SS).getSheetByName('DASH_DATA');
+  if (!sh) throw new Error('Tab DASH_DATA non trovato nel foglio di proiezione.');
+  const v = sh.getRange('A1:AM60').getDisplayValues();
+  // c0..c1 = colonne (0 = A), r1 = prima riga esclusa (indice)
+  const block = (c0, c1, r1) => {
+    const head = v[0].slice(c0, c1 + 1);
+    const rows = [];
+    for (let i = 1; i < r1; i++) {
+      const r = v[i].slice(c0, c1 + 1);
+      if (String(r[0]).trim() !== '') rows.push(r);
+    }
+    return { head: head, rows: rows };
+  };
+  return {
+    kpi: block(0, 2, 19),          // A:C
+    mesi: block(4, 11, 13),        // E:L
+    segnali: block(13, 16, 8),     // N:Q
+    categorie: block(18, 19, 18),  // S:T
+    scostamenti: block(21, 28, 13),// V:AC
+    storico: block(30, 33, 13),    // AE:AH
+    scadenze: block(35, 38, 60),   // AJ:AM
+    letto: Utilities.formatDate(new Date(), 'Europe/Rome', 'dd/MM/yyyy HH:mm')
+  };
 }

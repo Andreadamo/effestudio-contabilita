@@ -12,3 +12,8 @@ Pagina di ingresso su GitHub Pages per la Console Contabilità (solo amministraz
 ## Velocità
 - Backend: `getConsole`/`getGlobale` con cache server (30 min, chiave = giorno + ultima modifica file + versione azzerata a ogni nuovo incasso).
 - Pagina console in cache sul telefono: riscaricata solo dopo 6 ore.
+
+## Cassa 12 mesi (`cassa.html`)
+- Dashboard proiezione di cassa 12 mesi e allerta crisi (art. 3 CCII): da PC nel browser o dall'HUB (sezione Amministrazione).
+- Stesso PIN amministrazione e stesso accesso della Console (chiave `cont-admin`).
+- Dati: funzione `getProiezione` in `backend/ApiHub.gs`, legge il tab DASH_DATA del foglio "Effestudio – Proiezione cassa 12 mesi e allerta art. 3 CCII". Nessun dato salvato sul dispositivo.
