@@ -47,7 +47,7 @@ header.top button{background:rgba(255,255,255,.12);padding:8px 12px;font-size:13
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
 .legend i.ln{height:3px}
-.legend i.ds{height:0;border-top:2px dashed var(--mute)}
+.legend i.ds{height:0;border-top:2px dashed var(--mute);background:none!important}
 .chart{position:relative}
 .chart svg{display:block;width:100%;height:auto}
 .chart text{font:12px Barlow,sans-serif;fill:var(--mute)}
@@ -63,6 +63,8 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
 .bad{color:var(--red);font-weight:600}
 .ok{color:var(--green);font-weight:600}
 .foot{font-size:12px;color:var(--mute)}
+.sec{font:600 24px/1.2 'Barlow Condensed';margin:12px 0 0}
+.secnote{font-size:13px;color:var(--mute);margin:0}
 .loading{padding:40px;text-align:center;color:var(--mute)}
 @media (max-width:600px){.tile .n{font-size:24px}header.top h1{font-size:20px}.wrap{padding:12px 10px 48px}.card{padding:12px}}
 @media (pointer:coarse){input{font-size:16px!important}}
@@ -145,6 +147,35 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
         <h2>Scostamenti previsto vs reale</h2>
         <div class="note">Aggiornato a fine mese. Oltre ±10% scatta l'azione correttiva.</div>
         <div class="tw"><table><thead><tr><th>Mese</th><th class="num">Incassi previsti</th><th class="num">Incassi reali</th><th class="num">Δ %</th><th class="num">Uscite previste</th><th class="num">Uscite reali</th><th class="num">Δ %</th><th>Esito</th></tr></thead><tbody id="tb-scost"></tbody></table></div>
+      </section>
+
+      <h2 class="sec">Ricostruzione a ritroso: gen 2025 – ott 2026</h2>
+      <p class="secnote">Come se la proiezione fosse partita a gennaio 2025, usando a ogni data solo i dati disponibili allora. 2025 = registro Contabilità (uscite sottostimate: mancano F24, commercialista, utenze, affitto Pisa); 2026 = estratti conto. Liquidità 2026 ricostruita a ritroso dal saldo del 29/10/2026.</p>
+      <section class="grid2">
+        <div class="card">
+          <h2>Previsto vs reale, mese per mese</h2>
+          <div class="note">Linea piena = reale; tratteggio = previsione fatta a fine mese precedente. Riga verticale = inizio estratti conto (gen 2026).</div>
+          <div class="legend"><span><i class="ln" style="background:var(--blue)"></i>Incassi reali</span><span><i class="ds" style="border-color:var(--blue)"></i>Incassi previsti</span><span><i class="ln" style="background:var(--orange)"></i>Uscite reali</span><span><i class="ds" style="border-color:var(--orange)"></i>Uscite previste</span></div>
+          <div class="chart" id="c-r-flussi"></div>
+        </div>
+        <div class="card">
+          <h2>Cassa generata e liquidità stimata</h2>
+          <div class="note">Barre = netto del mese; linea = netto cumulato da gen 2025; punti = liquidità stimata (solo 2026).</div>
+          <div class="legend"><span><i style="background:var(--green)"></i>Netto +</span><span><i style="background:var(--red)"></i>Netto −</span><span><i class="ln" style="background:var(--blue)"></i>Netto cumulato</span><span><i style="background:var(--orange);border-radius:50%"></i>Liquidità stimata</span></div>
+          <div class="chart" id="c-r-cassa"></div>
+        </div>
+      </section>
+      <section class="grid2">
+        <div class="card">
+          <h2>Proiezione fatta a gennaio 2025 vs reale</h2>
+          <div class="note">Previsione con i soli dati ott–dic 2024.</div>
+          <div class="tw"><table><thead><tr><th>Mese</th><th class="num">Incassi prev.</th><th class="num">Incassi reali</th><th class="num">Uscite prev.</th><th class="num">Uscite reali</th><th class="num">Netto prev.</th><th class="num">Netto reale</th></tr></thead><tbody id="tb-gen25"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h2>Cosa avrebbe segnalato il cruscotto</h2>
+          <div class="note">Scostamento oltre ±10% = azione correttiva. Fornitori: fattura 3D Impianti 125/2024 (scadenza da verificare).</div>
+          <div class="tw"><table><thead><tr><th>Mese</th><th class="num">Δ inc.</th><th class="num">Δ usc.</th><th>Esito</th><th class="num">Copertura</th><th>Fornitori &gt;90 gg</th></tr></thead><tbody id="tb-retro"></tbody></table></div>
+        </div>
       </section>
 
       <p class="foot">Fonte: foglio "Effestudio – Proiezione cassa 12 mesi e allerta art. 3 CCII" (tab DASH_DATA), aggiornato a fine mese dalla Contabilità. I dati non vengono salvati sul dispositivo.</p>
@@ -271,9 +302,37 @@ td{padding:6px;border-bottom:1px solid var(--grid);vertical-align:top}
     $("tb-scad").innerHTML=sc.length?sc.map(r=>`<tr><td>${esc(data(r.data))}</td><td>${esc(r.voce)}</td><td class="num">${eur(r.importo)}</td><td class="mute">${esc(r.stato)}</td></tr>`).join(""):`<tr><td colspan="4" class="mute">Nessun pagamento nei prossimi 30 giorni.</td></tr>`;
     $("tb-scost").innerHTML=rows(DATA.scostamenti).map(r=>{const fl=v=>{const n=num(v);return n!==null&&Math.abs(n)>0.1?"bad":""};
       return `<tr><td>${esc(mese(r.mese))}</td><td class="num">${eur(r.inc_prev)}</td><td class="num">${eur(r.inc_reale)}</td><td class="num ${fl(r.inc_delta_pct)}">${pct(r.inc_delta_pct)}</td><td class="num">${eur(r.usc_prev)}</td><td class="num">${eur(r.usc_reale)}</td><td class="num ${fl(r.usc_delta_pct)}">${pct(r.usc_delta_pct)}</td><td>${esc(r.esito)}</td></tr>`}).join("");
-    drawCharts();
+    renderRetro();drawCharts();
   }
-  function drawCharts(){if(!DATA)return;chartLiq();chartFlussi();chartCat();chartStorico()}
+
+  function chartRFlussi(){
+    const R=rows(DATA.retro).map(r=>({mese:r.mese,per:r.perimetro,inc:num(r.incassi),usc:num(r.uscite),ip:num(r.inc_prev),up:num(r.usc_prev),id:r.inc_dpct,ud:r.usc_dpct,es:r.esito}));
+    if(!R.length){$("c-r-flussi").innerHTML='<p class="mute">Dati non disponibili.</p>';return}
+    const mx=Math.max(...R.flatMap(r=>[r.inc,r.usc,r.ip||0,r.up||0]));
+    const f=frame($("c-r-flussi"),270,0,mx*1.05,R.map(r=>mese(r.mese)));
+    const cx=i=>f.x(i)+f.bw/2;
+    const cut=R.findIndex(r=>r.per==="conti");
+    if(cut>0){el("line",{x1:f.x(cut),x2:f.x(cut),y1:f.m.t,y2:f.H-f.m.b,stroke:"#9AA6B4","stroke-dasharray":"3 3"},f.svg);txt(f.svg,f.x(cut)+4,f.m.t+10,"estratti conto →")}
+    const pl=(k,c,d)=>{const p=R.map((r,i)=>r[k]===null?null:`${cx(i)},${f.y(r[k])}`).filter(Boolean).join(" ");el("polyline",{points:p,fill:"none",stroke:c,"stroke-width":2,"stroke-linejoin":"round","stroke-dasharray":d?"5 4":"none"},f.svg)};
+    pl("inc","#2F5FD0",0);pl("ip","#2F5FD0",1);pl("usc","#D9822B",0);pl("up","#D9822B",1);
+    hover(f,R.length,i=>[mese(R[i].mese)+" · "+R[i].per,["Incassi reali",eur(R[i].inc),"#2F5FD0"],["Incassi previsti",eur(R[i].ip)+" ("+pct(R[i].id)+")"],["Uscite reali",eur(R[i].usc),"#D9822B"],["Uscite previste",eur(R[i].up)+" ("+pct(R[i].ud)+")"],["Esito",R[i].es||""]]);
+  }
+  function chartRCassa(){
+    const R=rows(DATA.retro).map(r=>({mese:r.mese,net:num(r.netto),cum:num(r.cumulato),liq:num(r.liq_stima),cop:num(r.copertura)}));
+    if(!R.length){$("c-r-cassa").innerHTML='<p class="mute">Dati non disponibili.</p>';return}
+    const lo=Math.min(0,...R.map(r=>r.net)),hi=Math.max(...R.map(r=>Math.max(r.cum||0,r.liq||0)))*1.05;
+    const f=frame($("c-r-cassa"),270,lo,hi,R.map(r=>mese(r.mese)));
+    R.forEach((r,i)=>{const w=Math.min(22,f.bw*.6),y0=f.y(0),y1=f.y(r.net);el("rect",{x:f.x(i)+(f.bw-w)/2,y:Math.min(y0,y1),width:w,height:Math.abs(y1-y0),rx:2,fill:r.net>=0?"#2E8B57":"#B83A2E",opacity:.5},f.svg)});
+    el("polyline",{points:R.map((r,i)=>`${f.x(i)+f.bw/2},${f.y(r.cum)}`).join(" "),fill:"none",stroke:"#2F5FD0","stroke-width":2.5,"stroke-linejoin":"round"},f.svg);
+    R.forEach((r,i)=>{if(r.liq!==null)el("circle",{cx:f.x(i)+f.bw/2,cy:f.y(r.liq),r:3.5,fill:"#D9822B"},f.svg)});
+    hover(f,R.length,i=>[mese(R[i].mese),["Netto del mese",eur(R[i].net)],["Netto cumulato",eur(R[i].cum),"#2F5FD0"],["Liquidità stimata",R[i].liq===null?"n.d. (servono estratti 2025)":eur(R[i].liq),"#D9822B"],["Copertura",R[i].cop===null?"n.d.":dec1(R[i].cop)+" mesi"]]);
+  }
+  function renderRetro(){
+    $("tb-gen25").innerHTML=rows(DATA.retro_gen25).map(r=>`<tr><td>${esc(mese(r.mese))}</td><td class="num">${eur(r.inc_prev)}</td><td class="num">${eur(r.inc_reale)}</td><td class="num">${eur(r.usc_prev)}</td><td class="num">${eur(r.usc_reale)}</td><td class="num">${eur(r.net_prev)}</td><td class="num">${eur(r.net_reale)}</td></tr>`).join("")||'<tr><td colspan="7" class="mute">Dati non disponibili.</td></tr>';
+    const fl=v=>{const n=num(v);return n!==null&&Math.abs(n)>0.1?"bad":""};
+    $("tb-retro").innerHTML=rows(DATA.retro).map(r=>`<tr><td>${esc(mese(r.mese))}</td><td class="num ${fl(r.inc_dpct)}">${pct(r.inc_dpct)}</td><td class="num ${fl(r.usc_dpct)}">${pct(r.usc_dpct)}</td><td>${esc(r.esito)}</td><td class="num">${r.copertura?dec1(r.copertura):"—"}</td><td class="${tone(r.fornitori)}">${esc(r.fornitori)}</td></tr>`).join("")||'<tr><td colspan="6" class="mute">Dati non disponibili.</td></tr>';
+  }
+  function drawCharts(){if(!DATA)return;chartLiq();chartFlussi();chartCat();chartStorico();chartRFlussi();chartRCassa()}
   let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(drawCharts,150)});
 
   /* ---------- accesso e caricamento ---------- */

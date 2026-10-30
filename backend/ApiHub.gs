@@ -54,7 +54,7 @@ const PROIEZIONE_SS = '1F3s7dg06d9UC4E88ZA2mwfJB6r7SaywgLdh5Bn9iiFA';
 function getProiezione() {
   const sh = SpreadsheetApp.openById(PROIEZIONE_SS).getSheetByName('DASH_DATA');
   if (!sh) throw new Error('Tab DASH_DATA non trovato nel foglio di proiezione.');
-  const v = sh.getRange('A1:AM60').getDisplayValues();
+  const v = sh.getRange('A1:BL60').getDisplayValues();
   // c0..c1 = colonne (0 = A), r1 = prima riga esclusa (indice)
   const block = (c0, c1, r1) => {
     const head = v[0].slice(c0, c1 + 1);
@@ -73,6 +73,8 @@ function getProiezione() {
     scostamenti: block(21, 28, 13),// V:AC
     storico: block(30, 33, 13),    // AE:AH
     scadenze: block(35, 38, 60),   // AJ:AM
+    retro: block(40, 55, 23),      // AO:BD ricostruzione gen 2025 – ott 2026
+    retro_gen25: block(57, 63, 13),// BF:BL proiezione fatta a gen 2025 vs reale
     letto: Utilities.formatDate(new Date(), 'Europe/Rome', 'dd/MM/yyyy HH:mm')
   };
 }
